@@ -1,0 +1,82 @@
+﻿<Window x:Class="SpinTheWheel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpinTheWheel"
+        xmlns:controls="clr-namespace:SpinTheWheel.Controls"
+        xmlns:viewmodels="clr-namespace:SpinTheWheel.ViewModels"
+        mc:Ignorable="d" x:Name="RootWindow"
+        Title="Spin The Wheel" Height="500" Width="400" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34" />
+    </WindowChrome.WindowChrome>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+    </Window.CommandBindings>
+
+    <Window.DataContext>
+        <viewmodels:MainViewModel/>
+    </Window.DataContext>
+
+    <Border x:Name="mainWindowBorder" Margin="0,0,0,0" BorderBrush="Black" BorderThickness="2,2,2,2" CornerRadius="10,10,0,0" Background="#FF005994">
+        <Grid x:Name="parentContainer" OpacityMask="#FFA80000" Margin="0,0,0,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height ="36"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Image Name="systemSelect" Source="/Spin.ico" Width="32" Height="32" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Opacity" Value="0.9"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="1.0"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <TextBlock Name="textBlockHeading" Text="Ticket Allocator" FontFamily="Comic Sans MS" Margin="6,3,0,0" VerticalAlignment="Center" FontWeight="Bold" FontSize="22" Foreground="White" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                <Button Style="{StaticResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize" Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
+                <Button x:Name="RestoreButton" Visibility="Collapsed" Style="{StaticResource RestoreButtonStyle}" Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore"/>
+                <Button x:Name="MaximizeButton" Visibility="Visible" Style="{StaticResource MaximizeButtonStyle}" Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
+                <Button Style="{StaticResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close" Command="{x:Static SystemCommands.CloseWindowCommand}"/>
+            </StackPanel>
+
+            <Viewbox Stretch="Uniform" Grid.Row="1">
+                <Grid Width="400" Height="500">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Wheel -->
+                    <Grid>
+                        <controls:WheelControl Items="{Binding Entries}" Width="360" Height="360" RenderTransformOrigin="0.5,0.5">
+                            <controls:WheelControl.RenderTransform>
+                                <RotateTransform x:Name="WheelRotate" Angle="0"/>
+                            </controls:WheelControl.RenderTransform>
+                        </controls:WheelControl>
+
+                        <!-- Pointer -->
+                        <Polygon x:Name="Pointer" Points="0,0 20,0 10,20" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,15,0,0"/>
+                    </Grid>
+
+                    <Button Grid.Row="1" Content="SPIN" Click="Spin_Click" FontSize="18" Margin="5,0,5,0" Style="{StaticResource RoundButton}"/>
+                    <TextBlock Grid.Row="2" Text="{Binding Winner}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,5"/>
+                </Grid>
+            </Viewbox>
+        </Grid>
+    </Border>
+</Window>
